@@ -1,0 +1,34 @@
+# LLM
+anthropic
+openai
+
+# 임베딩 & 리랭킹
+sentence-transformers
+
+# 벡터 DB
+chromadb
+
+# 키워드 검색 (6회차~)
+rank_bm25
+kiwipiepy
+
+# 그래프 (10회차~)
+networkx
+
+# 평가 (9회차)
+ragas
+datasets
+
+# 문서 로딩 (4회차)
+pypdf
+beautifulsoup4
+
+# 멀티모달 / 오픈소스 VLM (15~16회차)
+ollama              # Ollama Python 클라이언트 (Ollama 본체는 별도 설치)
+pillow
+pdf2image           # poppler 필요 (macOS: brew install poppler)
+colpali-engine      # ColQwen2 도면·문서 페이지 검색
+transformers        # Qwen2.5-VL 직접 실행 시
+accelerate
+qwen-vl-utils
+
