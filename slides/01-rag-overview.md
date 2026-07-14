@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 왜 RAG(Retrieval-Augmented Generation)인가?
 
 
-이미지 파일: [s01-cover.png](image-prompts.md#s01-cover-png)
+---
+
+![bg](generated/s01-cover.png)
 
 ---
 

@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 그래프 노드의 "종류"를 설계하다
 
 
-이미지 파일: [s14-cover.png](image-prompts.md#s14-cover-png)
+---
+
+![bg](generated/s14-cover.png)
 
 ---
 

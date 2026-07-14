@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 100만 개 문서에서 0.1초 만에 검색하기
 
 
-이미지 파일: [s03-cover.png](image-prompts.md#s03-cover-png)
+---
+
+![bg](generated/s03-cover.png)
 
 ---
 

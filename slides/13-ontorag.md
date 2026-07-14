@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 관계 어휘의 난립을 스키마로 다스린다
 
 
-이미지 파일: [s13-cover.png](image-prompts.md#s13-cover-png)
+---
+
+![bg](generated/s13-cover.png)
 
 ---
 

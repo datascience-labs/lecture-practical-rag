@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 나만의 GraphRAG 파이프라인 완성하기
 
 
-이미지 파일: [s12-cover.png](image-prompts.md#s12-cover-png)
+---
+
+![bg](generated/s12-cover.png)
 
 ---
 

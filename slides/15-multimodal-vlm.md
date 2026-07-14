@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 텍스트를 넘어 — 도면, 사진, 문서 이미지를 검색하고 이해하기
 
 
-이미지 파일: [s15-cover.png](image-prompts.md#s15-cover-png)
+---
+
+![bg](generated/s15-cover.png)
 
 ---
 

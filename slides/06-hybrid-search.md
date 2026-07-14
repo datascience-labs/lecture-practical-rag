@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 의미 검색이 놓치는 것을 키워드로 잡는다
 
 
-이미지 파일: [s06-cover.png](image-prompts.md#s06-cover-png)
+---
+
+![bg](generated/s06-cover.png)
 
 ---
 

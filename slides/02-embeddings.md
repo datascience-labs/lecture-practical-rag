@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 텍스트를 숫자로 바꾸면 왜 검색이 되는가?
 
 
-이미지 파일: [s02-cover.png](image-prompts.md#s02-cover-png)
+---
+
+![bg](generated/s02-cover.png)
 
 ---
 

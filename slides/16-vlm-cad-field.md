@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 엔지니어링 현장의 두 가지 실전 시나리오
 
 
-이미지 파일: [s16-cover.png](image-prompts.md#s16-cover-png)
+---
+
+![bg](generated/s16-cover.png)
 
 ---
 

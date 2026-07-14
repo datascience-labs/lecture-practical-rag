@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 검색 전에 질문 자체를 개선한다
 
 
-이미지 파일: [s08-cover.png](image-prompts.md#s08-cover-png)
+---
+
+![bg](generated/s08-cover.png)
 
 ---
 

@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## RAG 품질의 절반은 청킹에서 결정된다
 
 
-이미지 파일: [s04-cover.png](image-prompts.md#s04-cover-png)
+---
+
+![bg](generated/s04-cover.png)
 
 ---
 

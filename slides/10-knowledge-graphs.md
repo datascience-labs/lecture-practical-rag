@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 벡터가 못 담는 "관계"를 담는 자료구조
 
 
-이미지 파일: [s10-cover.png](image-prompts.md#s10-cover-png)
+---
+
+![bg](generated/s10-cover.png)
 
 ---
 

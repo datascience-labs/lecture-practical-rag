@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 전역(global) 질문을 푸는 구조적 접근
 
 
-이미지 파일: [s11-cover.png](image-prompts.md#s11-cover-png)
+---
+
+![bg](generated/s11-cover.png)
 
 ---
 

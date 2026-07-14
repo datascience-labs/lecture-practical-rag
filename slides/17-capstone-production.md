@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 배운 모든 것을 하나의 시스템으로
 
 
-이미지 파일: [s17-cover.png](image-prompts.md#s17-cover-png)
+---
+
+![bg](generated/s17-cover.png)
 
 ---
 

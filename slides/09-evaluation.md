@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## "좋아진 것 같다"가 아니라 숫자로 증명하기
 
 
-이미지 파일: [s09-cover.png](image-prompts.md#s09-cover-png)
+---
+
+![bg](generated/s09-cover.png)
 
 ---
 

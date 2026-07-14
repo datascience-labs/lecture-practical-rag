@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 후보는 찾았다, 이제 순서를 제대로 매기자
 
 
-이미지 파일: [s07-cover.png](image-prompts.md#s07-cover-png)
+---
+
+![bg](generated/s07-cover.png)
 
 ---
 

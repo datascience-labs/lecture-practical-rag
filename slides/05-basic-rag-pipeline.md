@@ -13,7 +13,9 @@ footer: 'Practical RAG Course'
 ## 검색 → 증강 → 생성, 전체를 연결한다
 
 
-이미지 파일: [s05-cover.png](image-prompts.md#s05-cover-png)
+---
+
+![bg](generated/s05-cover.png)
 
 ---
 
