@@ -77,6 +77,24 @@ ollama pull qwen2.5vl:7b
 - **오픈소스 VLM** (15~16회차): Qwen2.5-VL (Ollama / transformers, 로컬 실행)
 - **이미지·문서 검색** (15~16회차): CLIP (sentence-transformers), ColQwen2 (colpali-engine)
 
+## 실습 데이터
+
+[data/](data/)에 실습용 예제 데이터셋이 포함되어 있습니다 (가상 기업 "퍼플델타" 배경):
+
+- `data/sample_handbook.md` — 임직원 핸드북 (4~9회차: 청킹·파이프라인·평가)
+- `data/eval_set.json` — 평가셋 21문항: 핸드북 15 + 회사 문서 6 (7·9회차)
+- `data/company_docs/` — 조직·제품·고객 문서 12건 (6~9회차 검색 코퍼스, 10~14회차: 지식그래프·GraphRAG)
+- `data/eval_set_graph.json` — multi-hop·전역 질문 8문항 (10~12회차)
+
+자세한 설명은 [data/README.md](data/README.md)를 참고하세요. 15~16회차의 도면·사진 데이터는 보안 특성상 각자 준비합니다.
+
+## 실습 코드
+
+[code/](code/)에 4~9회차 슬라이드 실습 코드의 실행 가능한 버전이 있습니다.
+파일명은 슬라이드 주석(`# rag_pipeline.py` 등)과 일치하며, 회차 간 코드가 누적됩니다
+(5회차 `SimpleRAG` → 7회차 `RerankedRAG` 상속 등). 실행 순서와 API 키 필요 여부는
+[code/README.md](code/README.md)를 참고하세요.
+
 ## 슬라이드 커버 이미지 Batch 생성
 
 [slides/image-prompts.md](slides/image-prompts.md)에 정리된 프롬프트를 OpenAI Batch API용 JSONL로 변환하고, 배치 제출 후 결과 PNG를 저장할 수 있습니다.

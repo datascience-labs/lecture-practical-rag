@@ -192,7 +192,7 @@ class GlobalSearch:
 ## Step 6: 통합 실행과 비교
 
 ```python
-chunks = load_and_chunk("my_corpus/")            # 4회차 청킹 재사용
+chunks = load_and_chunk("data/company_docs/")    # 4회차 청킹 재사용
 
 G = build_graph(chunks)                          # 인덱싱 (시간·비용 소요!)
 reports = build_community_reports(G)
@@ -218,7 +218,7 @@ print(global_.search(questions["global"]))       # 구조화된 전체 요약
 
 ```bash
 pip install graphrag
-mkdir -p ./ragproj/input && cp docs/*.txt ./ragproj/input/
+mkdir -p ./ragproj/input && cp data/company_docs/*.txt ./ragproj/input/
 graphrag init --root ./ragproj      # settings.yaml, .env 생성
 # .env에 API 키, settings.yaml에 모델 설정
 graphrag index --root ./ragproj     # 인덱싱 (추출→그래프→커뮤니티→리포트)

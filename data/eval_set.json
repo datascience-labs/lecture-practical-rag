@@ -1,0 +1,191 @@
+[
+  {
+    "id": "hb-001",
+    "question": "연차는 며칠인가요?",
+    "type": "single-hop",
+    "ground_truth": "연차 휴가는 입사일 기준으로 매년 15일 부여된다. 1년 미만 근속자는 1개월 개근 시 1일씩 부여된다.",
+    "answer_section": "3.1 연차 휴가",
+    "answer_keywords": ["매년 15일", "1개월 개근"],
+    "answer_chunk_ids": ["handbook-3.1"]
+  },
+  {
+    "id": "hb-002",
+    "question": "재택근무는 주 몇 회까지 가능한가요?",
+    "type": "single-hop",
+    "ground_truth": "재택근무는 주 2회까지 팀장 승인 하에 가능하다.",
+    "answer_section": "2.3 재택근무",
+    "answer_keywords": ["주 2회", "팀장 승인"],
+    "answer_chunk_ids": ["handbook-2.3"]
+  },
+  {
+    "id": "hb-003",
+    "question": "재택근무 승인 절차를 알려주세요",
+    "type": "single-hop",
+    "ground_truth": "희망일 전일 17시까지 그룹웨어(DELTA)에서 신청서를 제출하고 팀장이 승인한다. 승인 후 보안 서약이 적용되며 VPN 사용이 필수다. 당일 신청은 원칙적으로 불가하다.",
+    "answer_section": "2.3 재택근무",
+    "answer_keywords": ["전일 17:00", "신청서"],
+    "answer_chunk_ids": ["handbook-2.3"]
+  },
+  {
+    "id": "hb-004",
+    "question": "법인카드 증빙은 언제까지 내나요?",
+    "type": "single-hop",
+    "ground_truth": "법인카드 사용 내역과 증빙은 매월 5일까지 그룹웨어 경비 시스템에 제출해야 한다.",
+    "answer_section": "5.1 법인카드",
+    "answer_keywords": ["매월 5일"],
+    "answer_chunk_ids": ["handbook-5.1"]
+  },
+  {
+    "id": "hb-005",
+    "question": "연차 이월이 안 되는 경우는?",
+    "type": "single-hop",
+    "ground_truth": "퇴직 예정자는 연차 이월이 불가하며 잔여 연차는 퇴직 시 수당으로 정산된다.",
+    "answer_section": "3.1 연차 휴가",
+    "answer_keywords": ["퇴직 예정자", "이월"],
+    "answer_chunk_ids": ["handbook-3.1"]
+  },
+  {
+    "id": "hb-006",
+    "question": "VPN 접속이 안 될 때 어디에 문의하나요?",
+    "type": "single-hop",
+    "ground_truth": "VPN 접속 문제는 IT헬프데스크(#1234)로 문의한다. 평일 09:00~18:00 운영이며 야간 장애는 그룹웨어 장애 신고 게시판에 등록한다.",
+    "answer_section": "6.2 VPN과 원격 접속",
+    "answer_keywords": ["IT헬프데스크", "#1234"],
+    "answer_chunk_ids": ["handbook-6.2"]
+  },
+  {
+    "id": "hb-007",
+    "question": "경조사 지원금은 어떻게 신청하나요?",
+    "type": "single-hop",
+    "ground_truth": "경조사 지원금은 인사팀에 증빙 서류와 함께 신청하며, 사유 발생일로부터 60일 이내에 신청해야 한다.",
+    "answer_section": "4.2 경조사 지원금",
+    "answer_keywords": ["인사팀", "증빙 서류"],
+    "answer_chunk_ids": ["handbook-4.2"]
+  },
+  {
+    "id": "hb-008",
+    "question": "결혼하면 휴가를 며칠 받을 수 있나요?",
+    "type": "single-hop",
+    "ground_truth": "본인 결혼 시 경조 휴가 5일이 부여되며, 증빙으로 청첩장 또는 혼인관계증명서를 제출한다.",
+    "answer_section": "3.3 경조 휴가",
+    "answer_keywords": ["본인 결혼", "5일"],
+    "answer_chunk_ids": ["handbook-3.3"]
+  },
+  {
+    "id": "hb-009",
+    "question": "급여일은 언제인가요?",
+    "type": "single-hop",
+    "ground_truth": "급여는 매월 25일에 지급하며, 25일이 주말·공휴일이면 직전 영업일에 지급한다.",
+    "answer_section": "4.1 급여 지급",
+    "answer_keywords": ["매월 25일"],
+    "answer_chunk_ids": ["handbook-4.1"]
+  },
+  {
+    "id": "hb-010",
+    "question": "비밀번호는 얼마나 자주 바꿔야 하나요?",
+    "type": "single-hop",
+    "ground_truth": "비밀번호는 90일마다 변경해야 하며 영문·숫자·특수문자를 포함해 12자 이상이어야 한다.",
+    "answer_section": "6.1 계정과 비밀번호",
+    "answer_keywords": ["90일", "12자"],
+    "answer_chunk_ids": ["handbook-6.1"]
+  },
+  {
+    "id": "hb-011",
+    "question": "국내 출장 숙박비는 하루 얼마까지 처리되나요?",
+    "type": "single-hop",
+    "ground_truth": "국내 출장 숙박비는 1박당 12만 원 한도이며, 한도 초과분은 본인 부담이다.",
+    "answer_section": "5.2 출장비",
+    "answer_keywords": ["12만 원"],
+    "answer_chunk_ids": ["handbook-5.2"]
+  },
+  {
+    "id": "hb-012",
+    "question": "병가는 며칠까지 쓸 수 있나요?",
+    "type": "single-hop",
+    "ground_truth": "유급 병가는 연 10일이며, 3일 이상 연속 사용 시 진단서를 제출해야 한다. 초과분은 무급 또는 연차 차감으로 처리한다.",
+    "answer_section": "3.4 병가",
+    "answer_keywords": ["연 10일", "진단서"],
+    "answer_chunk_ids": ["handbook-3.4"]
+  },
+  {
+    "id": "hb-013",
+    "question": "재택근무일에 초과 근무를 하려면 어떻게 해야 하나요?",
+    "type": "multi-hop",
+    "ground_truth": "재택근무일에도 근무 시간·근태 규정은 사무실 근무와 동일하게 적용되므로, 초과 근무는 사전에 그룹웨어로 신청하고 팀장 승인을 받아야 한다. 사전 승인 없는 초과 근무는 수당 지급 대상이 아니다.",
+    "answer_section": "2.3 재택근무 + 2.4 초과 근무",
+    "answer_keywords": ["동일하게 적용", "사전"],
+    "answer_chunk_ids": ["handbook-2.3", "handbook-2.4"]
+  },
+  {
+    "id": "hb-014",
+    "question": "퇴직할 때 무엇을 반납하고 마지막 급여는 언제 받나요?",
+    "type": "multi-hop",
+    "ground_truth": "마지막 근무일까지 노트북(IT헬프데스크), 출입증과 법인카드(총무팀)를 반납한다. 마지막 급여와 퇴직금은 퇴직일로부터 14일 이내에 지급되며, 잔여 연차 수당이 포함된다.",
+    "answer_section": "8.2 인수인계와 반납 + 4.1 급여 지급",
+    "answer_keywords": ["반납", "14일 이내"],
+    "answer_chunk_ids": ["handbook-8.2", "handbook-4.1"]
+  },
+  {
+    "id": "hb-015",
+    "question": "주차비 지원이 되나요?",
+    "type": "unanswerable",
+    "ground_truth": "핸드북에 주차비 관련 규정이 없으므로 '제공된 문서에서 답을 찾을 수 없습니다'라고 답해야 한다. 임의로 지어내면 환각이다.",
+    "answer_section": null,
+    "answer_keywords": [],
+    "answer_chunk_ids": []
+  },
+  {
+    "id": "cd-001",
+    "question": "PD-2000 스펙 알려줘",
+    "type": "keyword",
+    "ground_truth": "PD-2000의 최대 출력은 500W이며 무게는 2.3kg이다.",
+    "answer_section": "04-product-pd2000.txt",
+    "answer_keywords": ["500W", "2.3kg"],
+    "answer_chunk_ids": ["04-product-pd2000"]
+  },
+  {
+    "id": "cd-002",
+    "question": "PD-2000과 PD-3000의 차이는?",
+    "type": "multi-hop",
+    "ground_truth": "PD-3000은 PD-2000의 후속 모델로 출력이 30% 향상된 650W이고, 무게는 2.1kg으로 더 가볍다. 신형 파워모듈로 발열이 줄었고 원격 모니터링이 기본 탑재됐다.",
+    "answer_section": "04-product-pd2000.txt + 05-product-pd3000.txt",
+    "answer_keywords": ["650W", "후속 모델"],
+    "answer_chunk_ids": ["04-product-pd2000", "05-product-pd3000"]
+  },
+  {
+    "id": "cd-003",
+    "question": "PD-2000은 왜 단종되나요?",
+    "type": "multi-hop",
+    "ground_truth": "후속 모델 PD-3000의 출시와 핵심 부품인 파워모듈의 수급 불안 때문이다. 한국정밀부품의 구형 파워모듈 생산 축소가 수급 불안의 원인이다.",
+    "answer_section": "04-product-pd2000.txt + 11-suppliers.txt",
+    "answer_keywords": ["단종", "파워모듈"],
+    "answer_chunk_ids": ["04-product-pd2000", "11-suppliers"]
+  },
+  {
+    "id": "cd-004",
+    "question": "아틀라스 프로젝트는 누가 담당하나요?",
+    "type": "keyword",
+    "ground_truth": "영업2팀이 담당하며, 최지훈 팀장이 프로젝트 매니저를 맡고 있다.",
+    "answer_section": "09-project-atlas.txt",
+    "answer_keywords": ["영업2팀", "최지훈"],
+    "answer_chunk_ids": ["09-project-atlas"]
+  },
+  {
+    "id": "cd-005",
+    "question": "5천만 원이 넘는 계약은 누가 결재하나요?",
+    "type": "single-hop",
+    "ground_truth": "5천만 원을 초과하는 계약과 지출은 이강민 대표이사가 결재한다.",
+    "answer_section": "12-approval-policy.txt",
+    "answer_keywords": ["대표이사", "이강민"],
+    "answer_chunk_ids": ["12-approval-policy"]
+  },
+  {
+    "id": "cd-006",
+    "question": "ESS-500은 어느 공장에서 양산할 예정인가요?",
+    "type": "multi-hop",
+    "ground_truth": "ESS-500은 경북 구미의 제조2공장에서 양산할 예정이다.",
+    "answer_section": "06-product-ess500.txt + 07-factories.txt",
+    "answer_keywords": ["제조2공장"],
+    "answer_chunk_ids": ["06-product-ess500", "07-factories"]
+  }
+]

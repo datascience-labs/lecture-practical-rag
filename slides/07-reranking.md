@@ -166,7 +166,7 @@ class RerankedRAG(SimpleRAG):
 # 정답 청크 ID를 알고 있는 평가셋
 eval_set = [
     {"q": "연차 이월이 안 되는 경우?",  "answer_id": "hr-017"},
-    {"q": "XK-2000과 XK-3000 차이는?", "answer_id": "prod-003"},
+    {"q": "PD-2000과 PD-3000 차이는?", "answer_id": "prod-003"},
     # ... 10개 이상
 ]
 

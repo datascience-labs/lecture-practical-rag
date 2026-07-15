@@ -191,6 +191,23 @@ def semantic_chunk(sentences: list[str], threshold: float = 0.5) -> list[str]:
 
 ---
 
+## 예제 데이터셋 링크
+
+실습에는 저장소에 포함된 `data/sample_handbook.md`(가상 기업 임직원 핸드북)를 그대로 사용하면 된다.
+직접 만들어 보고 싶다면 아래 공개 데이터처럼 **섹션 구조가 있는 긴 문서**를 쓰면 청킹 차이가 잘 보인다.
+
+| 데이터 | 링크 | 추천 용도 |
+|---|---|---|
+| 서울시 공공데이터포털 | https://data.seoul.go.kr/ | 정책·안내문, 민원 FAQ 기반 청킹 |
+| 공공데이터포털 | https://www.data.go.kr/ | 기관별 규정·가이드 문서 수집 |
+| 고용노동부 정책자료 | https://www.moel.go.kr/policy/policydata/list.do | 인사·노무 핸드북 유사 문서 |
+| 국가법령정보센터 | https://www.law.go.kr/ | 조항·장·절 구조 기반 청킹 |
+| AI Hub 한국어 문서 요약 | https://www.aihub.or.kr/ | 긴 한국어 문서와 요약 비교 |
+
+**권장 변환 흐름**: PDF/HTML 다운로드 → 텍스트 추출 → Markdown 헤더 추가 → `data/sample_handbook.md` 자리에 교체
+
+---
+
 ## 실습: 파이프라인 구성
 
 ```python
@@ -201,7 +218,7 @@ from chromadb.utils import embedding_functions
 ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="BAAI/bge-m3")
 client = chromadb.PersistentClient(path="./chroma_db")
 
-document = open("sample_handbook.md").read()   # 실습용 긴 문서
+document = open("data/sample_handbook.md").read()   # 실습용 긴 문서
 
 strategies = {
     "fixed_300":     fixed_chunk(document, size=300, overlap=30),

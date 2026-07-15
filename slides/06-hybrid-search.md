@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+math: mathjax
 header: '실용 RAG 강의 — 6회차'
 footer: 'Practical RAG Course'
 ---
@@ -32,7 +33,7 @@ footer: 'Practical RAG Course'
 
 | 실패 패턴 | 예시 질문 | 이유 |
 |---|---|---|
-| 고유명사/코드 | "XK-2000 스펙 알려줘" | 임베딩 공간에서 코드명은 변별력 낮음 |
+| 고유명사/코드 | "PD-2000 스펙 알려줘" | 임베딩 공간에서 코드명은 변별력 낮음 |
 | 정확한 용어 | "제23조 2항 내용은?" | "제23조"와 "제24조"가 벡터상 거의 동일 |
 | 신조어/약어 | "TF트리거 절차" | 학습 데이터에 없는 사내 용어 |
 | 짧은 질문 | "환불" | 벡터가 정보 부족으로 모호 |
@@ -50,7 +51,7 @@ $$\text{score}(D, Q) = \sum_{t \in Q} \text{IDF}(t) \cdot \frac{f(t, D) \cdot (k
 직관적으로 3가지 요소:
 
 1. **TF** — 질문의 단어가 문서에 많이 나올수록 점수↑ (단, 포화됨: 10번이나 100번이나 비슷)
-2. **IDF** — 흔한 단어("있다", "하다")는 가중치↓, 희귀 단어("XK-2000")는 가중치↑
+2. **IDF** — 흔한 단어("있다", "하다")는 가중치↓, 희귀 단어("PD-2000")는 가중치↑
 3. **문서 길이 정규화** — 긴 문서가 우연히 매칭될 확률 보정
 
 ---
@@ -73,10 +74,12 @@ from kiwipiepy import Kiwi
 kiwi = Kiwi()
 
 def tokenize(text: str) -> list[str]:
-    # 명사, 동사, 형용사, 외국어(영문코드) 등 내용어만 추출
+    # 내용어만 추출: 체언(N*)·용언(V*)·외국어(SL)·숫자(SN)·한자(SH)
     return [t.form for t in kiwi.tokenize(text)
-            if t.tag[0] in ("N", "V", "S") or t.tag == "SL"]
+            if t.tag.startswith(("N", "V")) or t.tag in ("SL", "SN", "SH")]
 ```
+
+⚠️ `S`로 시작하는 태그를 통째로 넣으면 마침표(SF)·쉼표(SP) 같은 **문장부호까지 토큰이 된다** — 외국어(SL)·숫자(SN)만 골라 담을 것. "PD-2000"은 `["PD", "2000"]`으로 분리되어 질문과 문서 양쪽에서 같은 토큰으로 매칭된다.
 
 ---
 
@@ -85,23 +88,22 @@ def tokenize(text: str) -> list[str]:
 ```python
 # bm25_search.py
 from rank_bm25 import BM25Okapi
+from corpus import load_corpus          # 실습 코퍼스 42청크 (code/corpus.py)
 
-documents = [
-    "XK-2000 모델의 최대 출력은 500W이며 무게는 2.3kg입니다.",
-    "재택근무는 주 2회까지 팀장 승인 하에 가능합니다.",
-    "XK-3000은 XK-2000의 후속 모델로 출력이 30% 향상되었습니다.",
-    "연차 휴가는 입사일 기준으로 매년 15일 부여됩니다.",
-]
+corpus = load_corpus()
+bm25 = BM25Okapi([tokenize(c["text"]) for c in corpus])
 
-tokenized = [tokenize(d) for d in documents]
-bm25 = BM25Okapi(tokenized)
-
-query = "XK-2000 스펙"
+query = "PD-2000 스펙"
 scores = bm25.get_scores(tokenize(query))
-for doc, s in sorted(zip(documents, scores), key=lambda x: -x[1]):
-    print(f"[{s:.2f}] {doc[:50]}")
-# XK-2000이 포함된 문서가 정확히 상위에 랭크됨
+for c, s in sorted(zip(corpus, scores), key=lambda x: -x[1])[:3]:
+    print(f"[{s:.2f}] ({c['id']}) {c['text'][:40]}")
+# [4.95] (05-product-pd3000) PD-3000은 PD-2000의 후속 모델로 출력이 30% ...
+# [4.65] (04-product-pd2000) PD-2000은 산업용 전원장치로 제조1공장에서 생산...
+# [4.55] (07-factories) 제조1공장은 충남 천안에 있으며 PD-2000을 생산한다...
 ```
+
+⚠️ **장난감 예제의 함정**: 문서 4~5개로 시험하면 안 된다. 절반의 문서에 등장하는
+단어는 IDF가 0이 되어 **전부 0점**이 나온다 — BM25는 문서가 충분해야 통계가 산다.
 
 같은 질문을 벡터 검색으로 해보고 순위를 비교해보자!
 
@@ -166,11 +168,12 @@ class HybridRetriever:
         vec = self.collection.query(query_texts=[query], n_results=k * 3)
         vec_ranking = vec["ids"][0]
 
-        # 2) BM25 검색
+        # 2) BM25 검색 (0점 = 겹치는 단어 없음 → 후보에서 제외)
         scores = self.bm25.get_scores(tokenize(query))
         bm25_ranking = [self.doc_ids[i]
                         for i in sorted(range(len(scores)),
-                                        key=lambda i: -scores[i])[:k * 3]]
+                                        key=lambda i: -scores[i])[:k * 3]
+                        if scores[i] > 0]
 
         # 3) RRF 융합
         fused = rrf_fuse([vec_ranking, bm25_ranking])[:k]
@@ -183,9 +186,9 @@ class HybridRetriever:
 
 ```python
 test_cases = [
-    ("XK-2000 스펙 알려줘",       "키워드형 질문"),
+    ("PD-2000 스펙 알려줘",       "키워드형 질문"),
     ("집에서 일해도 되나요?",       "의미형 질문"),
-    ("XK 시리즈 신형은 뭐가 좋아?", "혼합형 질문"),
+    ("PD 시리즈 신형은 뭐가 좋아?", "혼합형 질문"),
 ]
 
 for query, qtype in test_cases:

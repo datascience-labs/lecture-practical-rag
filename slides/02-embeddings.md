@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+math: mathjax
 header: '실용 RAG 강의 — 2회차'
 footer: 'Practical RAG Course'
 ---
@@ -182,8 +183,8 @@ print(f"최적 문서: {documents[best]} (유사도 {scores[best]:.3f})")
 
 ```python
 # 반례 실험: 코드명 검색
-query2 = "XK-2000 모델 스펙"
-# → 의미 임베딩은 "XK-2000"을 잘 구분 못할 수 있음
+query2 = "PD-2000 모델 스펙"
+# → 의미 임베딩은 "PD-2000"을 잘 구분 못할 수 있음
 ```
 
 ---

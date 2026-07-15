@@ -134,10 +134,10 @@ def extract_triples(client, text: str) -> list[dict]:
 import networkx as nx
 
 documents = [
-    "김철수 과장은 영업1팀 소속으로 XK-2000 제품 판매를 담당한다.",
+    "김철수 과장은 영업1팀 소속으로 PD-2000 제품 판매를 담당한다.",
     "영업1팀과 영업2팀은 영업본부 산하 조직이다.",
     "박영희 본부장이 영업본부를 총괄하며, 5천만 원까지 전결 가능하다.",
-    "XK-2000은 산업용 전원장치로 제조1공장에서 생산된다.",
+    "PD-2000은 산업용 전원장치로 제조1공장에서 생산된다.",
 ]
 
 client = anthropic.Anthropic()

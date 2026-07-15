@@ -185,7 +185,7 @@ def run_eval(rag_system, eval_set: list[dict], k: int = 3) -> dict:
         metrics["mrr"].append(mrr(ids, answers))
     return {m: sum(v) / len(v) for m, v in metrics.items()}
 
-eval_set = json.load(open("eval_set.json"))
+eval_set = json.load(open("data/eval_set.json"))   # 저장소 제공 평가셋 (README 참고)
 for name, system in [("기본", baseline), ("하이브리드", hybrid),
                      ("하이브리드+리랭크", full)]:
     r = run_eval(system, eval_set)
