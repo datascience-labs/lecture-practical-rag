@@ -1,0 +1,15 @@
+# 비밀키 (이미 커밋된 .env는 git rm --cached .env 필요)
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 실습 산출물
+chroma_db/
+data/eval_set.generated.json
+hw_cache/
+
+# macOS
+.DS_Store

@@ -21,7 +21,7 @@ footer: 'Practical RAG Course'
 
 ## 오늘의 목표
 
-- 인덱싱과 질의 파이프라인을 클래스로 구조화한다
+- 인덱싱의 파이프라인을 클래스로 구조화한다
 - RAG 프롬프트를 설계한다 (근거 기반 답변, 출처 표기, 모름 처리)
 - Claude API로 스트리밍 답변을 생성한다
 - 완성된 CLI 질의응답 시스템을 만든다
@@ -154,7 +154,7 @@ from chunking import recursive_chunk          # 4회차에서 만든 함수
 rag = SimpleRAG()
 
 # --- 인덱싱 (최초 1회) ---
-raw = open("sample_handbook.md").read()
+raw = open("data/sample_handbook.md").read()
 chunks = recursive_chunk(raw, size=500)
 rag.index([
     {"id": f"handbook-{i}", "text": c, "source": "sample_handbook.md"}
