@@ -1,0 +1,195 @@
+{
+  "schema_version": "1.0",
+  "course_id": "practical-rag-01-12-8h",
+  "language": "ko",
+  "audience": "전공 지식은 있으나 직접 코딩에 부담이 있는 학습자",
+  "duration": {"orientation": 10, "chapters": 360, "capstone": 40, "wrap_up": 10, "breaks": 60, "total": 480},
+  "status": "강사용 문항 원본. workshop/site에 브라우저 실습·자동 채점·로컬 진도 저장 구현.",
+  "grading_policy": {
+    "chapter_pass": "실습 실행 기록과 두 필수 문항 통과",
+    "retry": "횟수 제한 없음. 오답 힌트 후 재시도",
+    "code_grading": "교수자가 허용 식을 검수한 뒤 구현. 공백·불필요한 괄호 차이를 허용하며 eval/exec는 사용하지 않음",
+    "assistance": "도움 여부 기록. 풀이 예시 공개 후에는 별도 동형 문항으로 확인",
+    "answer_key_visibility": "강사용. 중앙 채점 방식의 학생 API에는 정답·해설을 제출 전에 제공하지 않음"
+  },
+  "chapters": [
+    {
+      "id": "01", "title": "RAG 개요와 근거", "minutes": 20,
+      "sources": ["slides/01-rag-overview.md", "data/sample_handbook.md"],
+      "goal": "모델의 추측과 제공 문서에 근거한 답변을 구분한다.",
+      "activity": {
+        "steps": ["질문 '재택근무는 주 몇 회까지 가능한가요?'를 선택한다.", "컨텍스트 없음의 예시 답변과 핸드북 2.3을 제공한 예시 답변을 비교한다.", "근거 문장을 열고 답변의 횟수와 승인 조건을 확인한다."],
+        "expected": "주 2회까지, 팀장 승인 하에 가능. 수습 기간에는 불가. 문서 없는 답변의 구체적인 횟수는 근거를 확인할 수 없음.",
+        "evidence": ["컨텍스트 전후 비교 기록", "handbook-2.3 근거 확인"]
+      },
+      "questions": [
+        {"id": "01-observe", "type": "choice", "prompt": "문서 없이 나온 '주 3회'와 핸드북을 제공한 뒤 나온 '주 2회, 팀장 승인 필요'를 비교했습니다. 적절한 판단은?", "options": ["더 자세한 답변을 선택한다", "근거 문서와 조건이 일치하는 답변을 선택한다", "먼저 나온 답변을 선택한다", "두 답변의 평균인 주 2.5회를 선택한다"], "answer_index": 1, "hint": "답변의 유창함보다 원문의 횟수와 승인 조건을 확인하세요.", "explanation": "핸드북 2.3은 주 2회와 팀장 승인을 명시한다. RAG 출력도 원문과 대조해야 한다."},
+        {"id": "01-code", "type": "code_blank", "prompt": "답변에 사용할 문서 내용이 context에 있습니다. 프롬프트에 삽입할 변수명을 쓰세요.", "template": "context = handbook_section\nprompt = f'문서: {____}\\n질문: {question}'", "answers": ["context"], "hint": "첫 줄에서 문서 내용을 담은 변수입니다.", "explanation": "검색한 문서를 프롬프트에 포함하는 것이 증강 단계다."}
+      ]
+    },
+    {
+      "id": "02", "title": "임베딩과 의미 검색", "minutes": 25,
+      "sources": ["slides/02-embeddings.md", "data/sample_handbook.md"],
+      "goal": "의미 유사성과 정확한 식별자 일치를 구분한다.",
+      "activity": {
+        "steps": ["'집에서 일해도 되나요?'의 의미 검색 결과를 연다.", "재택근무 규정과 무관한 문서의 결과를 비교한다.", "'PD-2000'과 'PD-3000' 결과를 열어 제품 코드 혼동 가능성을 확인한다."],
+        "expected": "동일한 단어가 없어도 의미가 비슷한 문서를 찾을 수 있다. 제품 코드와 수치는 원문으로 별도 검증해야 한다.",
+        "evidence": ["의미 질문의 근거 문서 선택", "제품 코드 대조 기록"]
+      },
+      "questions": [
+        {"id": "02-observe", "type": "choice", "prompt": "'집에서 일하기'가 '재택근무' 문서를 찾았지만, PD-2000 검색에서는 PD-3000도 상위에 나타났습니다. 적절한 해석은?", "options": ["임베딩은 의미 검색에 유용하지만 제품 코드 일치와 사실 정확성을 보장하지 않는다", "유사도가 높으면 모든 수치가 일치한다", "임베딩 검색은 정확히 같은 단어만 찾는다", "유사도 값은 문서가 사실일 확률이다"], "answer_index": 0, "hint": "의미가 비슷하다는 것과 같은 제품이라는 것은 다릅니다.", "explanation": "숫자·코드명은 키워드 검색과 원문 확인으로 보완할 수 있다."},
+        {"id": "02-code", "type": "code_blank", "prompt": "sentence-transformers 모델에서 문장을 벡터로 바꾸는 메서드명을 쓰세요.", "template": "texts = ['집에서 일하기', '재택근무']\nvectors = model.____(texts)", "answers": ["encode"], "hint": "바로 위 개념 설명의 model.encode(texts)를 참고하세요.", "explanation": "encode는 입력 텍스트의 임베딩을 반환한다. 모델을 학습시키는 호출은 아니다."}
+      ]
+    },
+    {
+      "id": "03", "title": "벡터 DB와 필터", "minutes": 25,
+      "sources": ["slides/03-vector-databases.md", "data/sample_handbook.md"],
+      "goal": "벡터 검색에서 메타데이터로 대상 문서 범위를 제한한다.",
+      "activity": {
+        "steps": ["실습용 문서의 id·text·category 메타데이터를 연다.", "필터 없이 검색한 결과를 확인한다.", "category=HR 필터를 적용하고 결과의 category를 확인한다."],
+        "expected": "필터 적용 후 HR 문서만 후보가 된다. category는 웹 실습에서 부여할 메타데이터이며 원문 필드가 아니다.",
+        "evidence": ["필터 전후 설정", "결과 문서의 category 확인"]
+      },
+      "questions": [
+        {"id": "03-observe", "type": "choice", "prompt": "category=HR로 필터링한 뒤 유사도가 높았던 PRODUCT 문서가 사라졌습니다. 이유는?", "options": ["모델이 문서를 잊었다", "원본 문서가 삭제되었다", "검색 대상이 HR 메타데이터를 가진 문서로 제한되었다", "HR 문서의 내용이 자동 수정되었다"], "answer_index": 2, "hint": "필터는 문서 내용이나 모델 가중치를 변경하지 않습니다.", "explanation": "메타데이터 조건을 만족하는 범위 안에서 유사도 검색을 한다."},
+        {"id": "03-code", "type": "code_blank", "prompt": "ChromaDB 검색에 메타데이터 조건을 전달하는 인자명을 쓰세요.", "template": "result = collection.query(\n    query_texts=[question], n_results=3,\n    ____={'category': 'HR'},\n)", "answers": ["where"], "hint": "슬라이드의 메타데이터 필터 예제에서 where={...}를 찾으세요.", "explanation": "where는 메타데이터 조건이다. 원문을 수정하거나 삭제하는 인자가 아니다."}
+      ]
+    },
+    {
+      "id": "04", "title": "청킹과 예외 조항", "minutes": 30,
+      "sources": ["slides/04-chunking.md", "data/sample_handbook.md", "code/chunking.py"],
+      "goal": "분할 결과에서 규정과 예외가 함께 남는지 확인한다.",
+      "activity": {
+        "steps": ["핸드북 3.1의 연차 이월 규정과 퇴직 예정자 예외를 읽는다.", "고정 크기와 구조 기반 청킹의 결과를 나란히 연다.", "'퇴직 예정자도 연차를 이월할 수 있나요?'에 필요한 예외 조항을 표시한다."],
+        "expected": "일반 규정은 최대 5일 이월 가능이지만 퇴직 예정자는 이월 불가다. 크기보다 필요한 조항의 보존 여부를 확인한다.",
+        "evidence": ["청킹 설정", "예외를 포함한 청크 선택"]
+      },
+      "questions": [
+        {"id": "04-observe", "type": "choice", "prompt": "검색된 청크에는 '최대 5일 이월'만 있고 '퇴직 예정자는 이월 불가'는 경계 밖으로 잘렸습니다. 먼저 할 일은?", "options": ["LLM의 답변 길이를 늘린다", "모든 질문에 이월 가능이라고 답한다", "평가셋에서 퇴직 질문을 삭제한다", "청크 경계와 주변 문맥을 확인하고 예외 조항을 함께 전달한다"], "answer_index": 3, "hint": "정답을 결정하는 예외 조항이 컨텍스트에 들어갔는지 확인하세요.", "explanation": "모델을 바꾸기 전에 청킹과 검색된 근거의 누락을 점검한다. 큰 청크가 항상 정답은 아니다."},
+        {"id": "04-code", "type": "code_blank", "prompt": "다음은 고정 크기 청킹의 이동 간격입니다. 인접 청크가 overlap만큼 겹치게 하세요.", "template": "chunk_size = 500\noverlap = 100\nstep = chunk_size - ____", "answers": ["overlap"], "hint": "500자 청크가 100자 겹치려면 400자씩 이동합니다.", "explanation": "오버랩은 경계의 문맥 손실을 줄일 수 있다. 중복 증가와 비용도 함께 고려한다."}
+      ]
+    },
+    {
+      "id": "05", "title": "기본 RAG와 실패 진단", "minutes": 40,
+      "sources": ["slides/05-basic-rag-pipeline.md", "code/rag_pipeline.py", "data/sample_handbook.md"],
+      "goal": "검색 결과와 최종 답변을 분리해서 확인한다.",
+      "activity": {
+        "steps": ["재택근무와 연차 이월 질문에서 검색 결과 → 프롬프트 → 답변을 펼친다.", "근거가 빠진 예시와 근거가 있지만 답변이 틀린 예시를 비교한다.", "주차비 질문에 근거 없음을 표시하고 답변 보류를 선택한다."],
+        "expected": "정답 청크 누락은 검색 측부터, 정답 근거가 있는데 답이 틀리면 프롬프트·생성 측부터 점검한다. 주차비는 제공 문서에 정답이 없는 질문이다.",
+        "evidence": ["검색 결과와 답변 비교", "답변 보류 사례 확인"]
+      },
+      "questions": [
+        {"id": "05-observe", "type": "choice", "prompt": "컨텍스트에 '퇴직 예정자는 연차 이월 불가'가 포함되어 있는데 답변은 '퇴직 예정자도 5일 이월 가능'입니다. 우선 진단할 곳은?", "options": ["정답 근거의 사용 방식과 프롬프트·생성 단계", "문서 업로드 파일 확장자만", "문서 수를 무조건 늘리기", "평가 기준을 정답에 맞게 바꾸기"], "answer_index": 0, "hint": "이번 사례에서는 필요한 근거가 이미 검색되어 전달되었습니다.", "explanation": "검색에 성공했더라도 생성 단계에서 예외를 무시할 수 있다. 근거 충실성을 확인해야 한다."},
+        {"id": "05-code", "type": "code_blank", "prompt": "검색된 청크를 합친 문맥을 답변 프롬프트에 전달하세요. 교육용 간략 함수입니다.", "template": "chunks = retrieve(question)\ncontext = '\\n'.join(c['text'] for c in chunks)\nprompt = build_prompt(question, ____)", "answers": ["context"], "hint": "두 번째 줄에서 만든 변수입니다.", "explanation": "검색 결과를 생성 입력으로 연결한다. 실전에서는 출처 식별자도 함께 넣어야 한다."}
+      ]
+    },
+    {
+      "id": "06", "title": "하이브리드 검색과 RRF", "minutes": 30,
+      "sources": ["slides/06-hybrid-search.md", "code/hybrid_search.py", "data/company_docs/04-product-pd2000.txt"],
+      "goal": "의미·키워드 후보를 순위로 합치는 이유를 설명한다.",
+      "activity": {
+        "steps": ["동일 제품 코드 질문의 벡터 검색과 BM25 후보 목록을 연다.", "점수 대신 순위에 1/(60+rank)를 부여해 합친다.", "합산 전후 후보와 순위를 비교한다."],
+        "expected": "서로 다른 점수 척도를 직접 더하지 않고 순위로 융합한다. 하이브리드가 모든 질문에서 이긴다고 가정하지 않는다.",
+        "evidence": ["두 검색의 후보 목록", "RRF 계산 결과"]
+      },
+      "questions": [
+        {"id": "06-observe", "type": "choice", "prompt": "벡터 유사도는 0.8이고 BM25 점수는 8.0입니다. RRF를 사용하는 이유는?", "options": ["BM25가 숫자가 크므로 무조건 정답이어서", "문서 내용을 새로 작성하기 위해", "척도가 다른 점수를 직접 더하는 대신 각 검색의 순위를 융합하기 위해", "리랭커 학습을 생략하면 항상 더 정확해져서"], "answer_index": 2, "hint": "두 검색기의 점수는 같은 단위를 사용하지 않습니다.", "explanation": "RRF는 각 목록의 역순위 기여도를 합산한다. 순위는 1부터 시작한다."},
+        {"id": "06-code", "type": "code_blank", "prompt": "RRF에서 문서별 누적 점수에 더할 식을 쓰세요. rank는 1부터 시작합니다.", "template": "for rank, doc_id in enumerate(ranking, start=1):\n    scores[doc_id] = scores.get(doc_id, 0) + ____", "answers": ["1 / (k + rank)", "1.0 / (k + rank)", "1 / (rank + k)", "1.0 / (rank + k)"], "hint": "분자는 1, 분모는 상수 k와 순위 rank의 합입니다.", "explanation": "상위 순위일수록 더 큰 기여도를 갖는다. k와 최종 반환 문서 수는 다른 개념이다."}
+      ]
+    },
+    {
+      "id": "07", "title": "리랭킹과 후보 누락", "minutes": 25,
+      "sources": ["slides/07-reranking.md", "code/rerank_basic.py", "code/rag_pipeline_v2.py"],
+      "goal": "후보를 찾는 단계와 후보 순서를 바꾸는 단계를 구분한다.",
+      "activity": {
+        "steps": ["리랭킹 전후의 동일 후보 집합을 비교한다.", "질문과 예외 조항의 관련도가 높은 문서가 위로 올라오는 사례를 확인한다.", "정답 문서가 아예 없는 후보 집합에도 리랭킹을 적용한다."],
+        "expected": "리랭커는 주어진 후보의 순위를 바꾼다. 후보 밖의 정답은 새로 검색해야 한다.",
+        "evidence": ["순위 전후 기록", "후보 누락 진단"]
+      },
+      "questions": [
+        {"id": "07-observe", "type": "choice", "prompt": "정답 문서 D가 최초 검색 후보 A·B·C에 없습니다. 리랭커의 점수 계산만 바꾸면 D가 나타날까요?", "options": ["항상 나타난다", "나타나지 않는다. 먼저 후보 검색의 누락을 개선해야 한다", "최종 k를 1로 줄이면 나타난다", "답변을 길게 쓰면 나타난다"], "answer_index": 1, "hint": "리랭커에 입력된 문서가 무엇인지 보세요.", "explanation": "리랭커는 입력 후보를 재정렬하므로 후보 재현율이 중요하다. 후보 수 증가에는 시간·비용 증가가 따른다."},
+        {"id": "07-code", "type": "code_blank", "prompt": "관련도 점수가 높을수록 좋은 예시입니다. 내림차순 정렬 인자를 완성하세요.", "template": "ranked = sorted(\n    zip(scores, docs),\n    key=lambda pair: pair[0],\n    ____,\n)", "answers": ["reverse=True", "reverse = True"], "hint": "sorted의 reverse 인자를 True로 설정합니다.", "explanation": "이 예시의 관련도 점수는 큰 값이 먼저다. 거리처럼 작을수록 좋은 값과 혼동하지 않는다."}
+      ]
+    },
+    {
+      "id": "08", "title": "쿼리 재작성과 분해", "minutes": 30,
+      "sources": ["slides/08-query-transformation.md", "code/query_transforms.py", "code/adaptive_rag.py"],
+      "goal": "대화 맥락을 반영하되 질문의 의도를 바꾸지 않는다.",
+      "activity": {
+        "steps": ["'연차 규정 알려줘' 뒤의 '그럼 이월은 돼?'를 단독으로 검색한다.", "재작성 질문 '연차 휴가를 다음 해로 이월할 수 있는가?'로 다시 검색한다.", "제품 비교 질문을 두 제품의 속성 질문으로 나눈 예시를 확인한다."],
+        "expected": "재작성은 생략된 대상을 보충한다. 답변 내용을 미리 단정하거나 새로운 조건을 추가하지 않는다.",
+        "evidence": ["원래 질문과 재작성 질문", "의도 보존 여부 확인"]
+      },
+      "questions": [
+        {"id": "08-observe", "type": "choice", "prompt": "앞선 대화는 '연차 규정 알려줘', 현재 질문은 '그럼 이월은 돼?'입니다. 적절한 재작성은?", "options": ["연차를 반드시 무제한 이월할 수 있는 이유는?", "퇴직금 지급일은?", "재택근무를 다음 주로 이월할 수 있는가?", "연차 휴가를 다음 해로 이월할 수 있는가?"], "answer_index": 3, "hint": "대명사의 대상만 보충하고 정답을 미리 넣지 마세요.", "explanation": "대화 맥락에서 연차를 복원하되 가능 여부는 문서 검색으로 판단한다."},
+        {"id": "08-code", "type": "code_blank", "prompt": "rewrite는 대화 맥락을 반영한 독립 질문을 반환하는 교육용 함수입니다. 변환한 질문으로 검색하세요.", "template": "standalone_query = rewrite(history, question)\nchunks = retrieve(____)", "answers": ["standalone_query"], "hint": "원래 question 대신 첫 줄의 결과를 사용합니다.", "explanation": "재작성 결과를 실제 검색 입력으로 연결해야 효과를 비교할 수 있다."}
+      ]
+    },
+    {
+      "id": "09", "title": "검색 평가와 생성 평가", "minutes": 40,
+      "sources": ["slides/09-evaluation.md", "code/retrieval_metrics.py", "data/eval_set.json"],
+      "goal": "Hit·Recall·MRR을 읽고 검색 성공과 답변 충실성을 구분한다.",
+      "activity": {
+        "steps": ["교육용 순위표 [X, A, Y]와 정답 집합 {A, B}를 연다.", "k=3에서 Hit·Recall·첫 정답 역순위를 계산한다.", "동일한 평가 질문·k·정답 라벨로 기본/하이브리드/리랭킹을 비교하고 답변 근거성은 따로 확인한다."],
+        "expected": "순위표 예시에서 Hit@3=1, Recall@3=0.5, 단일 질문의 reciprocal rank=0.5다. MRR은 여러 질문의 reciprocal rank 평균이다.",
+        "evidence": ["지표 계산", "검색/생성 실패 분류", "평가 설정 확인"]
+      },
+      "questions": [
+        {"id": "09-observe", "type": "choice", "prompt": "검색 순위는 [X, A, Y], 정답 청크는 {A, B}입니다. Hit@3, Recall@3, 이 질문의 reciprocal rank는?", "options": ["0, 0, 0", "1, 0.5, 0.5", "1, 1, 1", "0.5, 1, 0.333"], "answer_index": 1, "hint": "정답이 하나라도 있나 / 정답 두 개 중 몇 개 있나 / 첫 정답이 몇 위인가를 나누세요.", "explanation": "A가 2위이고 B는 없다. 검색 성공 지표만으로 최종 답변의 환각 여부는 판단할 수 없다."},
+        {"id": "09-code", "type": "code_blank", "prompt": "첫 정답의 순위를 찾았을 때 역순위를 반환하세요. 여러 질문의 평균을 내면 MRR입니다.", "template": "for rank, doc_id in enumerate(retrieved_ids, start=1):\n    if doc_id in answer_ids:\n        return ____\nreturn 0.0", "answers": ["1 / rank", "1.0 / rank"], "hint": "1위는 1.0, 2위는 0.5, 3위는 약 0.333입니다.", "explanation": "첫 정답의 역순위를 사용한다. 정답 없는 질문의 답변 보류 평가는 별도 항목으로 다룬다."}
+      ]
+    },
+    {
+      "id": "10", "title": "지식 그래프와 2-hop", "minutes": 35,
+      "sources": ["slides/10-knowledge-graphs.md", "code/graph_common.py", "data/company_docs/03-sales-people.txt", "data/company_docs/04-product-pd2000.txt", "data/company_docs/07-factories.txt"],
+      "goal": "관계를 따라 여러 문서의 근거를 연결한다.",
+      "activity": {
+        "steps": ["영업 담당 문서에서 (김철수, 담당, PD-2000)을 확인한다.", "제품 문서에서 (PD-2000, 생산, 제조1공장)을 확인한다.", "김철수에서 깊이 1과 2로 탐색하고 각 관계의 출처를 연다."],
+        "expected": "김철수 → PD-2000 → 제조1공장은 2개 간선을 잇는 2-hop 경로다. 그래프의 사실도 원문 검수가 필요하다.",
+        "evidence": ["2-hop 경로", "각 간선의 출처"]
+      },
+      "questions": [
+        {"id": "10-observe", "type": "choice", "prompt": "김철수가 담당하는 제품의 생산 공장을 확인할 때 필요한 경로는?", "options": ["김철수 → PD-2000 → 제조1공장", "김철수 → ESS-500 → 제조2공장", "PD-3000 → 제조1공장", "김철수 → 제조2공장이라는 근거 없는 간선 추가"], "answer_index": 0, "hint": "담당 제품과 해당 제품의 생산 공장을 원문에서 각각 찾으세요.", "explanation": "담당과 생산이라는 두 관계를 연결한다. 김철수에서 공장으로 가는 직접 관계를 임의로 생성하지 않는다."},
+        {"id": "10-code", "type": "code_blank", "prompt": "위 경로의 공장까지 도달하도록 탐색 깊이를 지정하세요.", "template": "facts = find_neighbors(G, '김철수', depth=____)", "answers": ["2"], "hint": "김철수에서 제품까지 한 번, 제품에서 공장까지 한 번입니다.", "explanation": "필요한 관계 수를 고려해 탐색한다. 깊이를 무조건 늘리면 관련 없는 근거도 늘 수 있다."}
+      ]
+    },
+    {
+      "id": "11", "title": "GraphRAG Local과 Global", "minutes": 25,
+      "sources": ["slides/11-graphrag-concepts.md", "code/graph_common.py", "data/company_docs/01-company-overview.txt"],
+      "goal": "개체 주변 탐색과 커뮤니티 리포트 종합을 구분한다.",
+      "activity": {
+        "steps": ["준비된 그래프의 개체·커뮤니티·커뮤니티 리포트를 차례로 연다.", "김철수의 담당 제품 질문에는 개체 중심 근거를 확인한다.", "전체 사업 구조 질문에는 여러 리포트의 부분 답변과 종합 결과를 비교한다."],
+        "expected": "Local은 개체 주변 근거와 원문을, Global은 커뮤니티 리포트를 이용한 넓은 범위 종합을 수행한다. 요약의 누락·왜곡도 원문으로 확인한다.",
+        "evidence": ["질문 유형 분류", "리포트와 원문 대조"]
+      },
+      "questions": [
+        {"id": "11-observe", "type": "choice", "prompt": "'회사의 사업 구조와 전환 방향을 전체적으로 요약해줘'에 대해 GraphRAG Global Search가 주로 종합하는 것은?", "options": ["질문에 가장 가까운 한 문장만", "무작위 문서 한 개", "원문을 확인하지 않은 모델의 배경 지식만", "관련 커뮤니티 리포트에서 얻은 부분 답변들"], "answer_index": 3, "hint": "Global Search의 Map과 Reduce에 각각 무엇이 들어가는지 보세요.", "explanation": "리포트별 부분 답변을 얻어 종합한다. 리포트 작성과 인덱싱 비용, 요약 과정의 정보 손실도 고려한다."},
+        {"id": "11-code", "type": "code_blank", "prompt": "reports에는 커뮤니티 리포트 목록이 있습니다. Global Search의 입력을 연결하세요.", "template": "reports = build_community_reports(client, G, 'course_reports')\nsearcher = GlobalSearch(client, ____)", "answers": ["reports"], "hint": "첫 줄의 반환값을 사용합니다.", "explanation": "이 저장소의 GlobalSearch는 커뮤니티 리포트를 받아 map-reduce 방식으로 답변을 생성한다."}
+      ]
+    },
+    {
+      "id": "12", "title": "GraphRAG 비교와 경로 선택", "minutes": 35,
+      "sources": ["slides/12-graphrag-hands-on.md", "code/hw12_graphrag_hands_on.py", "data/eval_set_graph.json"],
+      "goal": "동일 질문의 근거·품질·비용을 비교해 검색 경로를 선택한다.",
+      "activity": {
+        "steps": ["준비된 추출 결과·그래프·리포트의 버전과 원문 출처를 확인한다.", "담당 제품/담당 제품의 공장/전체 사업 구조 질문을 기본 RAG·Local·Global로 비교한다.", "근거 누락, 관계 연결, 요약 범위와 준비 비용을 기록하고 질문별 경로를 선택한다."],
+        "expected": "단순 질문에 항상 GraphRAG를 쓰는 대신 질문 유형과 평가 결과를 보고 경로를 정한다. 비교 결과를 미리 승패가 정해진 것으로 취급하지 않는다.",
+        "evidence": ["세 질문의 경로 비교표", "선택 이유와 원문 근거"]
+      },
+      "questions": [
+        {"id": "12-observe", "type": "choice", "prompt": "기본 RAG·Local·Global 비교 후 적절한 운영 원칙은?", "options": ["모든 질문에 가장 비싼 경로를 쓴다", "Global이 항상 가장 정확하다고 가정한다", "같은 평가 질문에서 품질·근거·비용을 확인하고 질문 유형별 경로를 정한다", "실패 질문을 평가셋에서 제거한다"], "answer_index": 2, "hint": "기법의 이름보다 내 질문과 데이터에서의 결과를 보세요.", "explanation": "GraphRAG는 관계·전역 질문의 후보 해법이다. 단순 질문까지 항상 개선한다고 보장할 수 없다."},
+        {"id": "12-code", "type": "code_blank", "prompt": "다음은 질문 유형을 이미 분류한 교육용 라우터입니다. 전역 질문 경로를 연결하세요.", "template": "local_search = LocalSearch(G, chunks)\nglobal_search = GlobalSearch(client, reports)\nif question_type == 'global':\n    answer = ____.search(question)", "answers": ["global_search"], "hint": "두 번째 줄에 만든 객체입니다.", "explanation": "전역 질문에는 리포트 종합 경로를 연결한다. 이 분기만으로 질문 분류의 정확성이나 답변 품질이 보장되지는 않는다."}
+      ]
+    }
+  ],
+  "capstone": {
+    "minutes": 40,
+    "questions": [
+      {"id": "final-1", "question": "PD-3000의 최대 출력과 무게는?", "sources": ["data/company_docs/05-product-pd3000.txt"], "expected": "650W, 2.1kg", "suggested_route": "기본 RAG 또는 하이브리드"},
+      {"id": "final-2", "question": "대한중공업에 납품하는 제품은 어느 공장에서 생산되나?", "sources": ["data/company_docs/08-customers.txt", "data/company_docs/04-product-pd2000.txt", "data/company_docs/07-factories.txt"], "expected": "대한중공업 → PD-2000 → 제조1공장(충남 천안)", "suggested_route": "Local/그래프 확장 또는 다중 문서 검색"},
+      {"id": "final-3", "question": "제품 전환과 ESS 사업을 함께 보면 회사의 사업 방향은?", "sources": ["data/company_docs/01-company-overview.txt", "data/company_docs/04-product-pd2000.txt", "data/company_docs/05-product-pd3000.txt", "data/company_docs/06-product-ess500.txt", "data/company_docs/09-project-atlas.txt"], "expected": "세 사업 축: 전원장치·ESS·유지보수. PD-2000 단종에 따른 PD-3000 전환과 ESS 성장. 개발·출시 목표를 완료 사실로 단정하지 않음.", "suggested_route": "Global을 후보로 비교"}
+    ],
+    "submission_fields": ["question_id", "chosen_route", "source_refs", "answer", "failure_or_limit", "reason_for_selection"],
+    "review": "강사/조교가 답변의 근거와 선택 이유를 확인. 제안 경로와 달라도 충분한 근거가 있으면 인정. 최소 한 질문에서 검색/생성 중 우선 점검할 단계를 설명."
+  }
+}
