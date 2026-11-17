@@ -129,6 +129,8 @@ python scripts/openai_batch_images.py download
 
 ## 진행 방식
 
+01–12를 8시간으로 진행하는 단계별 웹 실습은 [workshop/README.md](workshop/README.md)를 참고하세요. 설치 없이 브라우저에서 실습을 비교하고, 객관식·코드 빈칸을 통과하면 다음 회차가 열립니다. [웹사이트 실행 안내](workshop/site/README.md)에 구현 범위와 실행 방법이 있습니다.
+
 - 각 회차는 이론 절반 + 실습 절반으로 구성되어 있습니다.
 - 실습 코드는 슬라이드에 포함되어 있으며, 회차가 진행되며 하나의 파이프라인으로 누적 확장됩니다 (5회차 `SimpleRAG` → 7회차 `RerankedRAG` → 12회차 미니 GraphRAG → 14회차 미니 NodeRAG → 15~16회차 멀티모달 확장).
 - 도면·현장 사진 같은 보안 민감 자료를 다루는 15~16회차는 전 과정이 로컬 오픈소스 모델로 구성되어 외부 API 전송이 없습니다.

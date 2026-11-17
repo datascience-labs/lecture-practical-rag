@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RAG 기초부터 GraphRAG까지, 브라우저에서 따라 하는 8시간 실습">
+  <meta name="theme-color" content="#142e2b">
+  <title>Practical RAG · 단계별 실습</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <a class="skip" href="#main">실습으로 이동</a>
+  <div id="app"><p class="loading">실습 자료를 불러오고 있습니다…</p></div>
+  <dialog id="source-dialog" aria-labelledby="source-title"><div class="dialog-head"><h2 id="source-title">근거 원문</h2><button id="close-source" type="button">닫기</button></div><p id="source-path" class="muted"></p><pre id="source-text" class="source-text"></pre></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "practical-rag-guided-workshop",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test core.test.mjs",
+    "test:dom": "node --test dom.test.mjs"
+  },
+  "devDependencies": {"linkedom": "0.18.15"}
+}
