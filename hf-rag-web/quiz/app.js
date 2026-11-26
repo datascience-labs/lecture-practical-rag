@@ -69,12 +69,12 @@ function lessonHTML(){
   const output=r.current&&r.runs[r.current]?runLab(c.id,r.current,course):null;
   const cs=c.concepts||[],conceptsDone=cs.length&&cs.every(k=>k.quizzes.filter(q=>q.required).every(q=>r.concepts?.[q.id]?.passed)),n=cs.length;
   const slides=[];
-  slides.push({label:'표지 · 목차',html:`<section class="hero"><div><div class="eyebrow">STEP ${c.id} / ${N()}</div><div class="hero-meta"><span class="pill">${h(c.time)} · ${c.minutes}분</span><span class="pill">강의 ${n} · 실습 · 확인 2</span><span class="pill">${done?'✓ 완료':'단계별 가이드 실습'}</span></div><h1>${h(c.title)}</h1><p class="muted">${h(c.goal)}</p>${notebookLinks(c)}</div><div class="hero-graphic" aria-hidden="true"><div class="flow-node">질문</div><span class="flow-arrow">→</span><div class="flow-node">근거</div><span class="flow-arrow">→</span><div class="flow-node">답변</div></div></section>
+  slides.push({label:'표지 · 목차',html:`<section class="hero"><div><div class="eyebrow">STEP ${c.id} / ${N()}</div><div class="hero-meta"><span class="pill">${h(c.time)} · ${c.minutes}분</span><span class="pill">강의 ${n} · 실습 · 확인 2</span><span class="pill">${done?'✓ 완료':'단계별 가이드 실습'}</span></div><h1>${h(c.title)}</h1><p class="muted">${h(c.goal)}</p>${notebookLinks(c)}</div><figure class="hero-figure"><img src="images/step${h(c.id)}_cover.png" alt="${h(course.figures?.[`images/step${c.id}_cover.png`]||c.title)}"></figure></section>
   <div class="step-strip"><span class="${conceptsDone?'done':''}">00 강의 · 퀴즈 ${conceptsDone?'✓':''}</span><span>→</span><span class="${runsDone?'done':''}">01 설정 비교 ${runsDone?'✓':''}</span><span>→</span><span class="${r.sourceRead?'done':''}">02 원문 확인 ${r.sourceRead?'✓':''}</span><span>→</span><span class="${r.responses[c.questions[0].id]?.passed?'done':''}">03 결과 해석</span><span>→</span><span class="${done?'done':''}">04 핵심 코드</span></div><section class="card"><div class="card-header"><h2>이 단계의 강의</h2><span class="pill">← → 키로 넘기기</span></div><ol class="toc">${cs.map((k,i)=>`<li><button type="button" data-goto="${i}">${h(k.title)}</button></li>`).join('')}<li><button type="button" data-goto="lab">${h(lab.title)} (실습)</button></li><li><button type="button" data-goto="check">확인하고 다음 단계로</button></li></ol></section>`});
   const firstOf={};
   cs.forEach((k,i)=>{
-    const parts=splitSlides(k.body);firstOf[i]=slides.length;
-    parts.forEach((lines,j)=>slides.push({label:`강의 ${i+1} · ${k.title}`,html:`<section class="card concept-card slide-card"><div class="card-header"><h2><span class="number-tag">${i+1}</span>${h(k.title)}</h2><span class="pill">${j+1} / ${parts.length}</span></div><div class="concept-body">${md(lines)}</div></section>`}));
+    const parts=splitSlides(k.body,k.slides,k.id);firstOf[i]=slides.length;
+    parts.forEach((lines,j)=>slides.push({label:`강의 ${i+1} · ${k.title}`,html:`<section class="card concept-card slide-card"><div class="card-header"><h2><span class="number-tag">${i+1}</span>${h(k.title)}</h2><span class="pill">${j+1} / ${parts.length}</span></div><div class="concept-body">${md(lines,true)}</div></section>`}));
     slides.push({label:`강의 ${i+1} · 확인 퀴즈`,html:conceptQuizHTML(k,i+1,r)});
   });
   firstOf.lab=slides.length;slides.push({label:'실습',html:`<section class="card"><div class="card-header"><h2><span class="number-tag">${n+1}</span>${h(lab.title)}</h2><span class="pill">직접 해보기</span></div><div class="concept">${h(lab.concept)}</div><ol class="instructions">${c.activity.steps.map(s=>`<li>${h(s)}</li>`).join('')}<li>아래의 모든 설정을 한 번씩 실행하고, 결과의 <strong>원문</strong> 버튼을 열어 근거를 확인하세요.</li></ol><div class="lab-controls"><div class="field"><label for="lab-config">비교할 설정</label><select id="lab-config">${lab.options.map(([key,label])=>`<option value="${key}" ${r.current===key?'selected':''}>${h(label)}</option>`).join('')}</select></div><button class="primary" data-action="run">실습 실행 →</button></div><div class="run-checks">${lab.options.map(([key,label])=>`<span class="${r.runs[key]?'done':''}">${r.runs[key]?'✓':'○'} ${h(label)}</span>`).join('')}<span class="${r.sourceRead?'done':''}">${r.sourceRead?'✓':'○'} 근거 원문 확인</span></div>${output?`<div class="lab-result" aria-label="실습 결과"><p class="muted">${h(output.label)} · 설정: ${h(lab.options.find(o=>o[0]===r.current)[1])}</p>${output.html}${sourceButtons(output.sources)}</div>`:'<p class="muted" style="margin-top:16px">설정을 선택하고 실행하면 결과가 여기에 표시됩니다.</p>'}</section>`});
@@ -92,16 +92,38 @@ function lessonHTML(){
 // 강의 본문 → 슬라이드. '## 소제목' 단위로 자른 뒤, 이어지는 구간을 한 화면 분량(SLIDE_BUDGET)까지 합친다.
 // 합친 장의 소제목은 'A · B' 하나로 (' — ' 뒤 부연은 뺀다). 분량은 글자 수 근사: 그림 550 · 실측표 300 · 표 행 70 · 짧은 줄도 45.
 const SLIDE_BUDGET=560;
-function splitSlides(lines){
+function splitSlides(lines,groups,id){
   const parts=[];let cur=null;
-  for(const l of lines){if(l.startsWith('## ')){cur={titles:[l.slice(3).split(' — ')[0].trim()],body:[]};parts.push(cur);continue;}if(!cur){cur={titles:[],body:[]};parts.push(cur);}cur.body.push(l);}
+  // '[[이어서]]' 줄: 같은 소제목으로 이어지는 새 구간(장 나눔용). "slides"에서는 '소제목 [[이어서]]' 이름으로 가리킨다.
+  for(const l of lines){if(l.startsWith('## ')){cur={name:l.slice(3),titles:[l.slice(3).split(' — ')[0].trim()],body:[]};parts.push(cur);continue;}if(l==='[[이어서]]'&&cur){cur={name:cur.name+' [[이어서]]',titles:[...cur.titles],body:[]};parts.push(cur);continue;}if(!cur){cur={titles:[],body:[]};parts.push(cur);}cur.body.push(l);}
   const w=b=>b.reduce((n,l)=>n+(l.startsWith('```')?0:l.startsWith('[[그림')?550:l.startsWith('[[표')?300:l.startsWith('|')?70:Math.max(l.length,45)),0);
-  const out=[];
-  for(const p of parts){const pw=w(p.body),last=out[out.length-1];if(last&&last.w+pw<=SLIDE_BUDGET){last.titles.push(...p.titles);last.body.push(...p.body);last.w+=pw;}else out.push({...p,body:[...p.body],w:pw});}
+  // 개념에 "slides"(소제목 원문 묶음)가 있으면 그대로 따른다. 모든 섹션을 원래 순서로, 빠짐·중복·없는 이름 없이 담아야 하며 아니면 자동 분할로 되돌린다.
+  let out=null;
+  if(groups){const names=parts.map(p=>p.name),valid=Array.isArray(groups)&&groups.every(g=>Array.isArray(g)&&g.length),flat=valid?groups.flat():[];
+    if(valid&&flat.length===names.length&&flat.every((t,i)=>t===names[i])){let i=0;out=groups.map(g=>{const ps=parts.slice(i,i+=g.length);return {titles:ps.flatMap(p=>p.titles),body:ps.flatMap(p=>p.body)};});}
+    else console.warn(`[slides] ${id}: 구성 정보가 본문 소제목과 맞지 않아 자동 분할을 사용합니다.`,{groups,names});}
+  if(!out){out=[];
+  for(const p of parts){const pw=w(p.body),last=out[out.length-1];if(last&&last.w+pw<=SLIDE_BUDGET){last.titles.push(...p.titles);last.body.push(...p.body);last.w+=pw;}else out.push({...p,body:[...p.body],w:pw});}}
   return out.map(o=>(o.titles.length?['## '+o.titles.join(' · ')]:[]).concat(o.body));
 }
 // 강의 본문(줄 배열) → HTML. 지원: ## 소제목, - 목록, | 표 |, ``` 코드, > 인용, [[표 이름 rows=.. cols=..]](실측표), **굵게**, `코드`
 const inline=s=>h(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');
+// 원문 팝업: Markdown 표(헤더 + |---| 구분 행 + 같은 열 수의 행)만 <table>로, 나머지는 원문 그대로 텍스트로 (innerHTML 미사용)
+function renderSourceText(el,text){
+  const cells=l=>l.trim().slice(1,-1).split('|').map(x=>x.trim()),isRow=l=>/^\s*\|.*\|\s*$/.test(l),isSep=l=>/^\s*\|(\s*:?-+:?\s*\|)+\s*$/.test(l);
+  const lines=text.split('\n'),out=[];let buf=[];
+  const flush=()=>{if(buf.length)out.push(document.createTextNode(buf.join('\n')));buf=[];};
+  for(let i=0;i<lines.length;){
+    const n=isRow(lines[i])&&isSep(lines[i+1]||'')?cells(lines[i]).length:0;
+    if(!n||cells(lines[i+1]).length!==n){buf.push(lines[i++]);continue;}
+    flush();const wrap=document.createElement('div'),table=document.createElement('table'),thead=table.createTHead(),tbody=table.createTBody();
+    const row=(sec,cs,tag)=>{const tr=sec.insertRow();cs.forEach(c=>{const td=document.createElement(tag);td.textContent=c;tr.append(td);});};
+    row(thead,cells(lines[i]),'th');i+=2;
+    while(i<lines.length&&isRow(lines[i])&&cells(lines[i]).length===n)row(tbody,cells(lines[i++]),'td');
+    wrap.className='source-table';wrap.append(table);out.push(wrap);
+  }
+  flush();el.replaceChildren(...out);
+}
 function tableHTML(head,rows){return `<div class="table-wrap"><table><thead><tr>${head.map(x=>`<th>${inline(x)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(x=>`<td>${inline(x)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;}
 function measured(name,opts){
   const t=course.tables[name],pick=k=>opts.match(new RegExp(k+'=([\\d,]+)'))?.[1].split(',').map(Number);
@@ -109,8 +131,9 @@ function measured(name,opts){
   const body=(rows?rows.map(i=>t.rows[i]):t.rows).map(r=>sel(r).map((x,i)=>i===0?String(x).replace(/^\d+\.\s*/,''):x===''?'—':x));
   return `<div class="measured">${tableHTML(sel(t.headers),body)}<p class="muted">실측 · instructor/expected_results${t.note?' · '+h(t.note):''}</p></div>`;
 }
-function md(lines){
-  let out='',i=0;
+// figsLast: 강의 슬라이드에서는 그림을 원래 순서대로 모아 본문(설명·목록·표·코드) 아래에 둔다
+function md(lines,figsLast){
+  let out='',figs='',i=0;
   while(i<lines.length){
     const l=lines[i];
     if(l.startsWith('```')){const code=[];i++;while(i<lines.length&&!lines[i].startsWith('```'))code.push(lines[i++]);i++;out+=`<pre class="code">${h(code.join('\n'))}</pre>`;continue;}
@@ -118,11 +141,11 @@ function md(lines){
     if(l.startsWith('- ')){out+='<ul>';while(i<lines.length&&lines[i].startsWith('- '))out+=`<li>${inline(lines[i++].slice(2))}</li>`;out+='</ul>';continue;}
     if(/^\d+\. /.test(l)){out+='<ol>';while(i<lines.length&&/^\d+\. /.test(lines[i]))out+=`<li>${inline(lines[i++].replace(/^\d+\. /,''))}</li>`;out+='</ol>';continue;}
     if(l.startsWith('> ')){out+='<blockquote>';while(i<lines.length&&lines[i].startsWith('> '))out+=`<p>${inline(lines[i++].slice(2))}</p>`;out+='</blockquote>';continue;}
-    const f=l.match(/^\[\[그림 (\w+)\]\]$/);if(f){const t=course.figures?.[f[1]]||'';out+=`<figure class="lecture-fig"><img src="img/${f[1]}.svg" alt="${h(t)}" loading="lazy"><figcaption>${h(t)}</figcaption></figure>`;i++;continue;}
+    const f=l.match(/^\[\[그림 ([\w./-]+)(?: (\d+))?(?: min(\d+))?(?: fit(\d+))?(?: (vh))?(?: \+(\d+))?(?: w(\d+))?\]\]$/);if(f){const t=course.figures?.[f[1]]||'',src=f[1].includes('/')?f[1]:`img/${f[1]}.svg`;const fig=`<figure class="lecture-fig"${f[6]?` style="margin-top:${12+Number(f[6])}px"`:''}><img src="${h(src)}" alt="${h(t)}" loading="lazy"${f[5]?' class="fig-vh"':''}${f[2]?` style="--fig-max:${f[2]}px${f[3]?`;--fig-min:${f[3]}px`:''}${f[4]?`;--fig-fit:${f[4]}px`:''}${f[7]?`;--fig-w:${f[7]}px`:''}"`:''}><figcaption>${h(t)}</figcaption></figure>`;if(figsLast)figs+=fig;else out+=fig;i++;continue;}
     const m=l.match(/^\[\[표 (\w+)([^\]]*)\]\]$/);
     out+=m?measured(m[1],m[2]):l.startsWith('## ')?`<h3>${inline(l.slice(3))}</h3>`:`<p>${inline(l)}</p>`;i++;
   }
-  return out;
+  return out+figs;
 }
 function conceptQuizHTML(k,no,r){
   const quiz=(q)=>{const saved=r.concepts?.[q.id],message=feedback[q.id];
@@ -143,7 +166,7 @@ function summaryHTML(){
   return `<div class="eyebrow">MY LEARNING RECORD</div><h1>내 학습 기록</h1><p class="muted">이 브라우저에 저장된 기록입니다. 강사에게 결과 파일을 제출하세요.</p><div class="summary-grid"><div class="summary-stat"><small>회차 완료</small><strong>${count} / ${N()}</strong></div><div class="summary-stat"><small>종합 실습 제출</small><strong>${capCount} / 3</strong></div><div class="summary-stat"><small>강사 확인</small><strong style="font-size:1.2rem">${capCount===3?'검토 대기':'제출 전'}</strong></div></div><section class="card"><label class="field"><span>제출용 학습자 표시명 (선택)</span><input type="text" id="learner-name" maxlength="80" value="${h(state.learnerName)}" placeholder="예: 3조 / 학습자 07"></label><p class="muted">학습자 ID: ${h(state.learnerId)}<br>자료 버전: ${h(course.version)} · 저장: ${state.savedAt?h(new Date(state.savedAt).toLocaleString('ko-KR')):'아직 없음'}</p><div class="table-wrap"><table><thead><tr><th>회차</th><th>실습 실행</th><th>문항</th><th>힌트</th><th>상태</th></tr></thead><tbody>${course.bank.chapters.map(c=>{const r=state.chapters[c.id];return `<tr><td>${c.id} ${h(c.title)}</td><td>${labs[c.id].required.filter(k=>r?.runs?.[k]).length}/${labs[c.id].required.length}</td><td>${c.questions.filter(q=>r?.responses?.[q.id]?.passed).length}/2</td><td>${c.questions.some(q=>r?.responses?.[q.id]?.assisted)?'사용':'—'}</td><td>${passed(c)?'완료':'미완료'}</td></tr>`;}).join('')}</tbody></table></div><div class="quiz-actions"><button class="primary" data-action="export">결과 JSON 내려받기</button><button data-action="import">다른 기기의 결과 가져오기</button></div><input type="file" id="import-file" accept=".json,application/json" hidden><p class="notice" style="margin-top:18px">${storageOK?'진도는 이 브라우저에 저장됩니다.':'브라우저 저장을 사용할 수 없습니다.'} 중앙 서버에 제출되지는 않습니다. 파일 가져오기는 현재 기록을 대체합니다. 강사는 종합 실습의 근거와 선택 이유를 별도로 검토합니다.</p><button data-action="reset">이 브라우저의 실습 기록 초기화</button></section>`;
 }
 function colabURL(){const id=course.bank.colab.notebook_id;return id?`https://colab.research.google.com/drive/${encodeURIComponent(id)}`:'';}
-function notebookLinks(c){const url=colabURL();if(c.id===course.bank.chapters[0].id)return `<p class="notebook-links">${url?`<a class="colab-link" href="${h(url)}" target="_blank" rel="noopener">▶ Colab에서 실습 노트북 열기</a>`:''}<span class="muted">하루 동안 이 노트북 하나로 실습합니다. 첫 코드 셀(Colab 준비)을 한 번 실행하세요. 이 단계: ${h(c.notebook_ref)}</span></p>`;return `<p class="notebook-links"><span class="muted">실습 노트북 <strong>${h(c.notebook_ref)}</strong> — Colab 왼쪽 목차(☰)에서 Part 제목을 눌러 이동하세요.</span></p>`;}
+function notebookLinks(c){const url=colabURL();if(c.id===course.bank.chapters[0].id)return `<p class="notebook-links">${url?`<a class="colab-link" href="${h(url)}" target="_blank" rel="noopener">▶ Colab에서 실습 노트북 열기</a>`:''}<span class="muted">하루 동안 이 노트북 하나로 실습합니다. 첫 코드 셀(Colab 준비)을 한 번 실행하세요.<br>이 단계: ${h(c.notebook_ref)}</span></p>`;return `<p class="notebook-links"><span class="muted">실습 노트북 <strong>${h(c.notebook_ref)}</strong> — Colab 왼쪽 목차(☰)에서 Part 제목을 눌러 이동하세요.</span></p>`;}
 function overviewHTML(){return `<div class="eyebrow">HF RAG · ${h(course.bank.schedule)}</div><h1>기법을 하나씩 더하며,<br>숫자로 확인하는 RAG.</h1><p>한국주택금융공사 업무를 본뜬 가상 문서 44개로 RAG의 근거부터 임베딩 · 하이브리드 검색 · 리랭킹 · 쿼리 변환 · 평가 · 지식 그래프 · 경로 선택까지 단계별로 확인합니다.</p><section class="card concept-body"><div class="eyebrow">오리엔테이션 · 09:00–09:15</div>${md(course.bank.intro)}</section><div class="next-bar"><p class="muted">화면의 검색 결과·답변·수치는 강사 PC(CPU, qwen3:1.7b · bge-m3)에서 평가셋 40문항으로 측정한 실제 결과입니다.</p><button class="primary" data-action="resume">${course.bank.chapters.some(passed)?'실습 이어하기':'첫 실습 시작하기'} →</button></div>`;}
 function capstoneHTML(){
   
@@ -160,7 +183,7 @@ function exportReport(){
 app.addEventListener('click',event=>{
   const button=event.target.closest('button');if(!button||button.disabled)return;
   if(button.dataset.chapter){state.active=button.dataset.chapter;save();setView('lesson');return;}
-  if(button.dataset.source){const doc=course.docs[button.dataset.source];if(!doc)return;document.querySelector('#source-title').textContent=doc.title;document.querySelector('#source-path').textContent=doc.source;document.querySelector('#source-text').textContent=doc.text;
+  if(button.dataset.source){const doc=course.docs[button.dataset.source];if(!doc)return;document.querySelector('#source-title').textContent=doc.title;document.querySelector('#source-path').textContent=doc.source;renderSourceText(document.querySelector('#source-text'),doc.text);
     if(view==='lesson'){record(state.active).sourceRead=true;save();render();}dialog.showModal();return;}
   if(button.dataset.hint){const id=button.dataset.hint;hints[id]=true;const r=record(state.active);r.drafts[id+'-assisted']=true;if(r.responses[id])r.responses[id].assisted=true;save();render();return;}
   if(button.dataset.check){

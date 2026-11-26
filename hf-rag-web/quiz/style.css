@@ -19,7 +19,7 @@
 .slide-nav{position:sticky;bottom:0;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;margin-top:16px;background:var(--bg,#f6f8f7);border-top:1px solid var(--line,#d9e1dd)}
 .slide-nav button[disabled]{opacity:.4;cursor:default}
 .toc{padding-left:22px;line-height:2}.toc button{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;text-align:left}
-.lecture-fig{margin:14px 0 18px;text-align:center}.lecture-fig img{max-width:100%;height:auto;border:1px solid var(--line,#d9e1dd);border-radius:16px;background:#fff}
+.lecture-fig{margin:14px 0 18px;text-align:center}.lecture-fig img{max-width:100%;height:auto;background:#fff}
 .lecture-fig figcaption{font-size:.85rem;color:var(--muted,#6b7a75);margin-top:6px}
 .badge-req{display:inline-block;background:#c0504d;color:#fff;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:700}
 .quiz.required{border-left:4px solid #c0504d;padding-left:14px}
@@ -57,3 +57,27 @@ fieldset legend{font-size:1.08rem;font-weight:700}
 .slide>.card+.card{border-top:1px solid var(--line);padding-top:18px}
 @media(max-width:720px){.slide{height:auto;min-height:60vh;padding:18px 16px}}
 .slide .concept-body{line-height:1.75}.slide .card-header{margin-bottom:4px}.slide .concept-body h3{margin-top:4px}
+/* 강의 본문 가독성: 어절 단위 줄바꿈, 목록 간격 (코드·퀴즈·실습 제외) */
+.concept-body :is(p,li,h3,th,td){word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty}
+.concept-body ul,.concept-body ol{padding-left:1.6em}
+.concept-body li{padding-left:.3em}
+/* 원문 팝업의 Markdown 표 (pre→div 변경분 여백 보존, 표는 팝업 안에서만) */
+.source-text{margin:1em 0}
+.source-table{overflow-x:auto;margin:4px 0 8px;white-space:normal;line-height:1.6}
+.source-table th,.source-table td{word-break:keep-all;overflow-wrap:break-word}
+/* 강의 본문·원문 팝업 표 글자 크기 (그 외 표는 기존 .85rem) */
+.concept-body table,.source-table table{font-size:1rem}
+/* 설명 문단+코드 블록이 2쌍 이상 이어질 때(07-c3 실습의 질의 4종)만 설명을 자기 코드에 붙인다 */
+.concept-body :is(p:has(+ pre.code + p + pre.code),pre.code + p:has(+ pre.code)){margin-bottom:4px}
+.concept-body :is(p:has(+ pre.code + p + pre.code),pre.code + p:has(+ pre.code)) + pre.code{margin-top:4px}
+/* 단계 표지 이미지(step01_cover~step08_cover): 기존 작은 흐름 그림 자리에 표시 */
+.hero:has(.hero-figure){grid-template-columns:minmax(0,1fr) minmax(0,340px)}
+.hero-figure{margin:0;justify-self:end}.hero-figure img{display:block;width:auto;height:auto;max-width:100%;max-height:190px}
+@media(max-width:1000px){.hero:has(.hero-figure){grid-template-columns:1fr}.hero-figure{justify-self:start}}
+/* 강의 슬라이드 그림: 최대 880×260, 비율 유지·가운데, 슬라이드 맨 아래(md figsLast) */
+.slide .lecture-fig{margin:12px 0 0}.slide .lecture-fig img{width:auto;height:auto;max-width:min(100%,var(--fig-w,880px));max-height:260px}.slide .lecture-fig figcaption{margin-top:4px}
+/* 표지 목차 2열(P2): 순서는 위→아래, 왼쪽 열→오른쪽 열. 1000px 이하는 1열 */
+.toc{columns:2;column-gap:48px}.toc li{break-inside:avoid}
+@media(max-width:1000px){.toc{columns:1}}
+/* 그림별 확대(--fig-max, course.json의 [[그림 경로 높이 min하한 fit여유]]): --fig-fit이 있으면 1080px 기준 여유 높이에 맞추되 --fig-min(확대 전 크기) 아래로는 줄이지 않는다. 본문 폭이 1100px로 같아지는 1546px 이상 화면에서만. 창 높이가 1080px보다 낮으면 슬라이드 틀이 줄어든 만큼 함께 줄이고, 260px 아래로는 줄이지 않는다 */
+@media(min-width:1546px){.slide .lecture-fig img{max-height:max(max(260px,min(var(--fig-min,var(--fig-max,260px)),calc(var(--fig-min,var(--fig-max,260px)) - 1080px + 100vh))),min(var(--fig-max,260px),calc(var(--fig-fit,var(--fig-max,260px)) - 1080px + 100vh)))}}
